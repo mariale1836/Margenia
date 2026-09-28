@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>Control de Costos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Control de Costos</h1>
+      <p>Producción, ventas, mermas y utilidad</p>
+    </div>
+    <button id="installBtn" class="ghost hidden">Instalar</button>
+  </header>
+
+  <main>
+    <section class="card hero">
+      <div>
+        <span class="eyebrow">Resumen de hoy</span>
+        <h2 id="todayLabel"></h2>
+      </div>
+      <div class="kpis">
+        <div><span>Ventas</span><strong id="kpiSales">$0</strong></div>
+        <div><span>Costos</span><strong id="kpiCosts">$0</strong></div>
+        <div><span>Utilidad</span><strong id="kpiProfit">$0</strong></div>
+        <div><span>Margen</span><strong id="kpiMargin">0%</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Vega · Registro rápido</h3>
+      <p class="muted">Escribe frases simples. Ejemplos: “vendí 20 kilos de pan a 2000”, “merma 3 kilos de pan”, “gasté 14700 en harina”.</p>
+      <form id="vegaForm">
+        <textarea id="vegaInput" rows="3" placeholder="Escribe lo que pasó hoy..."></textarea>
+        <button type="submit">Registrar</button>
+      </form>
+      <div id="vegaReply" class="reply" aria-live="polite"></div>
+    </section>
+
+    <section class="grid2">
+      <section class="card">
+        <h3>Venta manual</h3>
+        <form id="saleForm" class="stack">
+          <input id="saleProduct" placeholder="Producto (ej. pan corriente)" required>
+          <input id="saleQty" type="number" step="0.01" min="0" placeholder="Cantidad" required>
+          <select id="saleUnit">
+            <option value="kg">kg</option>
+            <option value="u">unidades</option>
+          </select>
+          <input id="salePrice" type="number" min="0" step="1" placeholder="Precio unitario" required>
+          <button type="submit">Agregar venta</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h3>Gasto / insumo</h3>
+        <form id="expenseForm" class="stack">
+          <input id="expenseName" placeholder="Ej. Harina" required>
+          <input id="expenseAmount" type="number" min="0" step="1" placeholder="Monto" required>
+          <button type="submit">Agregar gasto</button>
+        </form>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="sectionHead">
+        <h3>Movimientos de hoy</h3>
+        <button id="clearToday" class="danger ghost">Borrar hoy</button>
+      </div>
+      <div id="movements" class="list"></div>
+    </section>
+
+    <section class="card">
+      <h3>Calculadora de producto</h3>
+      <p class="muted">Calcula costo total, costo por unidad, utilidad y margen.</p>
+      <form id="costForm" class="stack">
+        <input id="calcName" placeholder="Producto" value="Pan corriente">
+        <input id="calcYield" type="number" step="0.01" min="0.01" placeholder="Rendimiento total (kg o unidades)" required>
+        <input id="calcSalePrice" type="number" step="1" min="0" placeholder="Precio de venta por kg/unidad" required>
+        <div id="ingredientRows"></div>
+        <button type="button" id="addIngredient" class="ghost">+ Agregar insumo</button>
+        <button type="submit">Calcular</button>
+      </form>
+      <div id="calcResult" class="result"></div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <button data-scroll="top">Inicio</button>
+    <button data-scroll="vegaForm">Vega</button>
+    <button data-scroll="costForm">Costos</button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>

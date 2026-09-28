@@ -1,0 +1,9 @@
+{
+  "name": "Control de Costos",
+  "short_name": "Costos",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#111827",
+  "icons": []
+}
