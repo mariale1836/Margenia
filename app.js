@@ -1,7 +1,19 @@
 
 const $ = s => document.querySelector(s);
 const money = n => new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n||0);
-const todayKey = () => new Date().toISOString().slice(0,10);
+const todayKey = () => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Santiago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
+
+  const get = type =>
+    parts.find(part => part.type === type).value;
+
+  return `${get('year')}-${get('month')}-${get('day')}`;
+};
 const storeKey='costos_app_v1';
 let state = JSON.parse(localStorage.getItem(storeKey)||'{"movements":[]}');
 
@@ -351,4 +363,86 @@ render();
     load(recipes[0]);
     $('#savedRecipe').value = '0';
   }
+})();
+// Consultar movimientos por día o mes.
+(() => {
+  const mode = $('#periodMode');
+  const day = $('#periodDay');
+  const month = $('#periodMonth');
+
+  if (!mode || !day || !month) return;
+
+  day.value = todayKey();
+  month.value = todayKey().slice(0, 7);
+
+  todayMovs = function () {
+    const selected = mode.value === 'month'
+      ? month.value
+      : day.value;
+
+    if (!selected) return [];
+
+    return state.movements.filter(m =>
+      mode.value === 'month'
+        ? String(m.date).slice(0, 7) === selected
+        : m.date === selected
+    );
+  };
+
+  const originalRender = render;
+
+  render = function () {
+    originalRender();
+
+    const monthly = mode.value === 'month';
+    const selected = monthly ? month.value : day.value;
+
+    day.hidden = monthly;
+    month.hidden = !monthly;
+    document.querySelector('label[for="periodDay"]')
+      .hidden = monthly;
+    document.querySelector('label[for="periodMonth"]')
+      .hidden = !monthly;
+
+    $('#todayLabel').textContent = selected
+      ? new Date(
+          selected + (monthly ? '-01' : '') + 'T12:00:00'
+        ).toLocaleDateString('es-CL', monthly
+          ? { month: 'long', year: 'numeric' }
+          : {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })
+      : 'Selecciona una fecha';
+
+    const movements = $('#movements');
+    movements.closest('section')
+      .querySelector('h3').textContent =
+        'Movimientos del período';
+
+    const summary = $('#cashSummary');
+    if (summary) {
+      summary.textContent = summary.textContent.replace(
+        'Compras y pagos de hoy:',
+        'Compras y pagos del período:'
+      );
+    }
+
+    if (!todayMovs().length) {
+      movements.textContent =
+        'No hay movimientos en este período.';
+    }
+
+    // Evitar borrar hoy mientras se consulta otra fecha.
+    $('#clearToday').hidden =
+      monthly || day.value !== todayKey();
+  };
+
+  [mode, day, month].forEach(control =>
+    control.addEventListener('change', () => render())
+  );
+
+  render();
 })();
