@@ -20,7 +20,26 @@
   <main>
     <section class="card hero">
       <div>
-        <span class="eyebrow">Resumen de hoy</span>
+        <span class="eyebrow">Resumen del período</span>
+
+<div class="stack">
+  <label for="periodMode">Consultar por</label>
+  <select id="periodMode">
+    <option value="day">Día</option>
+    <option value="month">Mes</option>
+  </select>
+
+  <label for="periodDay">Elegir día</label>
+  <input id="periodDay" type="date">
+
+  <label for="periodMonth">Elegir mes</label>
+  <input id="periodMonth" type="month">
+
+  <p class="muted">
+    Estos filtros sirven para consultar el historial.
+    Los registros nuevos se guardan con la fecha de hoy.
+  </p>
+</div>
         <h2 id="todayLabel"></h2>
       </div>
       <div class="kpis">
