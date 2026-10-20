@@ -45,9 +45,32 @@ const saleCosts = ms
       total / recipe.yield;
   }, 0);
 
-const costs = saleCosts + ms
+const costs = saleCosts;
+
+const cashOut = ms
   .filter(m => m.type === 'expense')
   .reduce((sum, m) => sum + m.amount, 0);
+
+let cashSummary = document.querySelector('#cashSummary');
+
+if (!cashSummary) {
+  cashSummary = document.createElement('p');
+  cashSummary.id = 'cashSummary';
+  cashSummary.className = 'muted';
+  document.querySelector('#movements')
+    .before(cashSummary);
+}
+
+cashSummary.textContent =
+  'Compras y pagos de hoy: ' + money(cashOut) +
+  '. Estos pagos se muestran por separado; ' +
+  'no se descuentan de la utilidad estimada.';
+
+document.querySelector('#kpiCosts')
+  .previousElementSibling.textContent = 'Costo de lo vendido';
+
+document.querySelector('#kpiProfit')
+  .previousElementSibling.textContent = 'Utilidad estimada';
   const profit=sales-costs;
   const margin=sales>0?profit/sales*100:0;
   $('#kpiSales').textContent=money(sales);
