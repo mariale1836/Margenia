@@ -1,4 +1,4 @@
-const CACHE = 'margenia-v2';
+const CACHE = 'margenia-v3';
 const FILES = [
   './',
   'index.html',
