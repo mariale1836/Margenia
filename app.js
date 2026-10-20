@@ -12,7 +12,42 @@ function render(){
   $('#todayLabel').textContent=d.toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
   const ms=todayMovs();
   const sales=ms.filter(m=>m.type==='sale').reduce((a,m)=>a+m.amount,0);
-  const costs=ms.filter(m=>m.type==='expense').reduce((a,m)=>a+m.amount,0);
+  const recipes = JSON.parse(
+  localStorage.getItem('margenia_recetas_v1') || '[]'
+);
+
+const normalize = s => String(s).normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase().trim();
+
+const saleCosts = ms
+  .filter(m => m.type === 'sale')
+  .reduce((sum, m) => {
+    const quantity = String(m.detail || '')
+      .match(/^([\d.,]+)\s+(kg|u)\b/i);
+    if (!quantity) return sum;
+
+    const product = normalize(m.label);
+    const recipe = recipes.find(r =>
+      (normalize(r.name) === product ||
+       (product === 'pan' &&
+        normalize(r.name) === 'pan corriente')) &&
+      r.unit === quantity[2].toLowerCase()
+    );
+    if (!recipe || !(recipe.yield > 0)) return sum;
+
+    const total = recipe.ingredients.reduce(
+      (subtotal, ingredient) =>
+        subtotal + Number(ingredient.cost || 0), 0
+    );
+    return sum +
+      Number(quantity[1].replace(',', '.')) *
+      total / recipe.yield;
+  }, 0);
+
+const costs = saleCosts + ms
+  .filter(m => m.type === 'expense')
+  .reduce((sum, m) => sum + m.amount, 0);
   const profit=sales-costs;
   const margin=sales>0?profit/sales*100:0;
   $('#kpiSales').textContent=money(sales);
